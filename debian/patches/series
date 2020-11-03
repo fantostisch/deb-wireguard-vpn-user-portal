@@ -1,0 +1,3 @@
+autoload.patch
+composer.patch
+phpunit8_compat.patch
