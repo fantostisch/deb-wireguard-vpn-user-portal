@@ -1,5 +1,3 @@
-diff --git a/bin/add-user.php b/bin/add-user.php
-index 63c5177..6a3dd28 100644
 --- a/bin/add-user.php
 +++ b/bin/add-user.php
 @@ -1,3 +1,4 @@
@@ -18,8 +16,6 @@ index 63c5177..6a3dd28 100644
  
  use LC\Common\Config;
  use LC\Portal\Storage;
-diff --git a/bin/foreign-key-list-fetcher.php b/bin/foreign-key-list-fetcher.php
-index 9ee216e..52b123b 100644
 --- a/bin/foreign-key-list-fetcher.php
 +++ b/bin/foreign-key-list-fetcher.php
 @@ -1,3 +1,4 @@
@@ -38,8 +34,6 @@ index 9ee216e..52b123b 100644
  
  use LC\Common\Config;
  use LC\Common\HttpClient\CurlHttpClient;
-diff --git a/bin/generate-oauth-key.php b/bin/generate-oauth-key.php
-index 4b89bd4..0c044ca 100644
 --- a/bin/generate-oauth-key.php
 +++ b/bin/generate-oauth-key.php
 @@ -1,3 +1,4 @@
@@ -58,8 +52,6 @@ index 4b89bd4..0c044ca 100644
  
  use fkooman\Jwt\Keys\EdDSA\SecretKey;
  use LC\Common\FileIO;
-diff --git a/bin/init.php b/bin/init.php
-index 8d35041..28e61b7 100644
 --- a/bin/init.php
 +++ b/bin/init.php
 @@ -1,3 +1,4 @@
@@ -78,8 +70,6 @@ index 8d35041..28e61b7 100644
  
  use LC\Common\FileIO;
  use LC\Portal\Storage;
-diff --git a/bin/show-oauth-key.php b/bin/show-oauth-key.php
-index 9e92551..bd1b1a3 100644
 --- a/bin/show-oauth-key.php
 +++ b/bin/show-oauth-key.php
 @@ -1,3 +1,4 @@
@@ -98,8 +88,6 @@ index 9e92551..bd1b1a3 100644
  
  use fkooman\Jwt\Keys\EdDSA\SecretKey;
  use LC\Common\FileIO;
-diff --git a/web/api.php b/web/api.php
-index c27a85d..b4dcdaf 100644
 --- a/web/api.php
 +++ b/web/api.php
 @@ -7,8 +7,8 @@
@@ -113,8 +101,6 @@ index c27a85d..b4dcdaf 100644
  
  use fkooman\Jwt\Keys\EdDSA\SecretKey;
  use LC\Common\Config;
-diff --git a/web/index.php b/web/index.php
-index 4774554..83f6dd7 100644
 --- a/web/index.php
 +++ b/web/index.php
 @@ -7,8 +7,8 @@
@@ -128,8 +114,6 @@ index 4774554..83f6dd7 100644
  
  use fkooman\Jwt\Keys\EdDSA\SecretKey;
  use fkooman\OAuth\Server\OAuthServer;
-diff --git a/web/oauth.php b/web/oauth.php
-index c4f65ab..175490a 100644
 --- a/web/oauth.php
 +++ b/web/oauth.php
 @@ -7,8 +7,8 @@
@@ -143,8 +127,6 @@ index c4f65ab..175490a 100644
  
  use fkooman\Jwt\Keys\EdDSA\SecretKey;
  use fkooman\OAuth\Server\OAuthServer;
-diff --git a/web/well-known.php b/web/well-known.php
-index 411bc9f..05a0210 100644
 --- a/web/well-known.php
 +++ b/web/well-known.php
 @@ -7,8 +7,8 @@

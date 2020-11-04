@@ -1,8 +1,6 @@
-diff --git a/tests/OAuth/BearerValidatorTest.php b/tests/OAuth/BearerValidatorTest.php
-index 1feb480..ac8526b 100644
 --- a/tests/OAuth/BearerValidatorTest.php
 +++ b/tests/OAuth/BearerValidatorTest.php
-@@ -38,7 +38,7 @@ class BearerValidatorTest extends TestCase
+@@ -38,7 +38,7 @@
      /**
       * @return void
       */
@@ -11,11 +9,9 @@ index 1feb480..ac8526b 100644
      {
          $this->dateTime = new DateTime('2018-01-01');
  
-diff --git a/tests/StorageTest.php b/tests/StorageTest.php
-index 8556e88..2d6ed8d 100644
 --- a/tests/StorageTest.php
 +++ b/tests/StorageTest.php
-@@ -23,7 +23,7 @@ class StorageTest extends TestCase
+@@ -23,7 +23,7 @@
      /**
       * @return void
       */
@@ -24,11 +20,9 @@ index 8556e88..2d6ed8d 100644
      {
          $dateTime = new DateTime('2018-01-01 13:37:00');
          $db = new PDO('sqlite::memory:');
-diff --git a/tests/VpnPortalModuleTest.php b/tests/VpnPortalModuleTest.php
-index 7de6254..b24d9c3 100644
 --- a/tests/VpnPortalModuleTest.php
 +++ b/tests/VpnPortalModuleTest.php
-@@ -30,7 +30,7 @@ class VpnPortalModuleTest extends TestCase
+@@ -30,7 +30,7 @@
      /**
       * @return void
       */
