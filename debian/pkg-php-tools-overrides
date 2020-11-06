@@ -1,3 +1,4 @@
 paragonie	constant_time_encoding	php-constant-time
 paragonie	random_compat		none
 paragonie	sodium_compat		none
+lc common wireguard-php-lc-common none
