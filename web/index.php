@@ -310,38 +310,6 @@ try {
 
     $clientFetcher = new ClientFetcher($config);
 
-    $wgProvidedConfig = $config->s('WireGuard');
-
-    /* @var false|WGEnabledConfig $wgConfig */
-    if (true === $wgProvidedConfig->optionalBool('enabled')) {
-        $wgHttpClient = new CurlHttpClient();
-        $wgDaemonClient = new WGDaemonClient($wgHttpClient, $wgProvidedConfig->requireString('daemonUri', 'http://localhost:8080'));
-
-        $dnsArray = $wgProvidedConfig->requireArray('dns');
-        foreach ($dnsArray as $dns) {
-            if (!is_string($dns)) {
-                throw new ConfigException('DNS provided for WireGuard "'.$dns.'" was not a string.');
-            }
-        }
-
-        $wgConfig = new WGEnabledConfig(
-            $wgDaemonClient,
-            $wgProvidedConfig->requireString('hostName'),
-            $wgProvidedConfig->requireInt('port', 51820),
-            $dnsArray
-        );
-
-        $wireguardPortalModule = new WireGuardPortalModule($tpl, $wgConfig);
-        $service->addModule($wireguardPortalModule);
-
-        $service->addBeforeHook(
-            'enableWireGuard',
-            new EnableWireGuardHook($tpl)
-        );
-    } else {
-        $wgConfig = false;
-    }
-
     // portal module
     $vpnPortalModule = new VpnPortalModule(
         $config,
