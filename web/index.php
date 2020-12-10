@@ -17,7 +17,6 @@ use fkooman\SeCookie\CookieOptions;
 use fkooman\SeCookie\Session;
 use fkooman\SeCookie\SessionOptions;
 use LC\Common\Config;
-use LC\Common\Exception\ConfigException;
 use LC\Common\FileIO;
 use LC\Common\Http\CsrfProtectionHook;
 use LC\Common\Http\HtmlResponse;
@@ -54,9 +53,10 @@ use LC\Portal\Tpl;
 use LC\Portal\TwoFactorEnrollModule;
 use LC\Portal\UpdateSessionInfoHook;
 use LC\Portal\VpnPortalModule;
+use LC\Portal\WireGuard\Daemon\WGDaemonClient;
 use LC\Portal\WireGuard\EnableWireGuardHook;
-use LC\Portal\WireGuard\WGDaemonClient;
-use LC\Portal\WireGuard\WGEnabledConfig;
+use LC\Portal\WireGuard\Manager\WGEnabledConfig;
+use LC\Portal\WireGuard\Manager\WGManager;
 use LC\Portal\WireGuard\WireGuardPortalModule;
 
 $logger = new Logger('vpn-user-portal');
@@ -83,7 +83,7 @@ try {
         $localeDirs[] = sprintf('%s/config/locale/%s', $baseDir, $styleName);
     }
 
-    $sessionExpiry = $config->requireString('sessionExpiry');
+    $sessionExpiry = $config->requireString('sessionExpiry', 'P90D');
 
     // we always want browser session to expiry after PT8H hours, *EXCEPT* when
     // the configured "sessionExpiry" is < PT8H, then we want to follow that
@@ -112,7 +112,7 @@ try {
         )
     );
 
-    $supportedLanguages = $config->requireArray('supportedLanguages');
+    $supportedLanguages = $config->requireArray('supportedLanguages', ['en_US' => 'English']);
     // the first listed language is the default language
     $uiLang = array_keys($supportedLanguages)[0];
     if (null !== $cookieUiLang = $seCookie->get('ui_lang')) {
@@ -120,7 +120,7 @@ try {
     }
 
     // Authentication
-    $authMethod = $config->requireString('authMethod');
+    $authMethod = $config->requireString('authMethod', 'FormPdoAuthentication');
 
     $tpl = new Tpl($templateDirs, $localeDirs, sprintf('%s/web', $baseDir));
     $tpl->setLanguage($uiLang);
@@ -353,11 +353,27 @@ try {
     );
     $service->addModule($vpnPortalModule);
 
+    $wgConfig = WGEnabledConfig::fromConfig($config);
+
+    if ($wgConfig instanceof WGEnabledConfig) {
+        $wgHttpClient = new CurlHttpClient();
+        $wgDaemonClient = new WGDaemonClient($wgHttpClient, $wgConfig->daemonUri);
+        $wgManager = new WGManager($wgConfig, $storage, $wgDaemonClient, $baseDir);
+        $wireguardPortalModule = new WireGuardPortalModule($tpl, $wgManager);
+        $service->addModule($wireguardPortalModule);
+        $service->addBeforeHook(
+            'enableWireGuard',
+            new EnableWireGuardHook($tpl)
+        );
+    } else {
+        $wgManager = false;
+    }
+
     $adminPortalModule = new AdminPortalModule(
         $tpl,
         $storage,
         $serverClient,
-        $wgConfig
+        $wgManager
     );
     $service->addModule($adminPortalModule);
 

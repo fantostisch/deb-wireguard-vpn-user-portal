@@ -10,28 +10,26 @@
 namespace LC\Portal\WireGuard;
 
 use LC\Common\Http\HtmlResponse;
-use LC\Common\Http\InputValidation;
 use LC\Common\Http\RedirectResponse;
 use LC\Common\Http\Request;
 use LC\Common\Http\Service;
 use LC\Common\Http\ServiceModuleInterface;
 use LC\Common\TplInterface;
+use LC\Portal\WireGuard\Manager\WGClientConfig;
+use LC\Portal\WireGuard\Manager\WGManager;
 
 class WireGuardPortalModule implements ServiceModuleInterface
 {
     /** @var \LC\Common\TplInterface */
     private $tpl;
 
-    /** @var \LC\Portal\WireGuard\WGEnabledConfig */
-    private $wgConfig;
+    /** @var \LC\Portal\WireGuard\Manager\WGManager */
+    private $wgManager;
 
-    /**
-     * @param \LC\Portal\WireGuard\WGEnabledConfig $wgConfig
-     */
-    public function __construct(TplInterface $tpl, $wgConfig)
+    public function __construct(TplInterface $tpl, WGManager $wgManager)
     {
         $this->tpl = $tpl;
-        $this->wgConfig = $wgConfig;
+        $this->wgManager = $wgManager;
     }
 
     /**
@@ -48,7 +46,7 @@ class WireGuardPortalModule implements ServiceModuleInterface
                 /** @var \LC\Common\Http\UserInfo */
                 $userInfo = $hookData['auth'];
                 $userId = $userInfo->getUserId();
-                $wgConfigs = $this->wgConfig->wgDaemonClient->getConfigs($userId);
+                $wgConfigs = $this->getConfigs($userId, $request);
 
                 return new HtmlResponse(
                     $this->tpl->render(
@@ -69,24 +67,12 @@ class WireGuardPortalModule implements ServiceModuleInterface
             function (Request $request, array $hookData) {
                 /** @var \LC\Common\Http\UserInfo */
                 $userInfo = $hookData['auth'];
-
-                $displayName = InputValidation::displayName($request->requirePostParameter('displayName'));
                 $userId = $userInfo->getUserId();
+                $displayName = $request->requirePostParameter('displayName');
 
-                $createResponse = $this->wgConfig->wgDaemonClient->createConfig($userId, $displayName);
-                $wgConfigFile = $this->tpl->render('vpnPortalWGConfigurationFile',
-                    [
-                        'hostName' => $this->wgConfig->wgHostName,
-                        'port' => $this->wgConfig->wgPort,
-                        'clientIp' => $createResponse->ip,
-                        'serverPublicKey' => $createResponse->serverPublicKey,
-                        'clientPrivateKey' => $createResponse->clientPrivateKey,
-                        'dnsServers' => $this->wgConfig->dns,
-                    ]
-                );
-                $wgConfigFileName = sprintf('%s_%s_%s.conf', $this->wgConfig->wgHostName, date('Ymd'), $displayName);
-
-                $wgConfigs = $this->wgConfig->wgDaemonClient->getConfigs($userId);
+                $wgConfigFile = $this->wgManager->addConfig($userId, $displayName, null);
+                $wgConfigFileName = sprintf('%s_%s_%s.conf', $this->wgManager->getPortalConfig()->hostName, date('Ymd'), $displayName);
+                $wgConfigs = $this->getConfigs($userId, $request);
 
                 return new HtmlResponse(
                     $this->tpl->render(
@@ -110,12 +96,30 @@ class WireGuardPortalModule implements ServiceModuleInterface
             function (Request $request, array $hookData) {
                 /** @var \LC\Common\Http\UserInfo */
                 $userInfo = $hookData['auth'];
-
+                $userId = $userInfo->getUserId();
                 $publicKey = $request->requirePostParameter('publicKey');
-                $this->wgConfig->wgDaemonClient->deleteConfig($userInfo->getUserId(), $publicKey);
+
+                $this->wgManager->deleteConfig($userId, $publicKey);
 
                 return new RedirectResponse($request->getRootUri().'WGConfigurations', 302);
             }
         );
+    }
+
+    /**
+     * @param string  $userId
+     * @param Request $request
+     *
+     * @throws \LC\Common\Http\Exception\HttpException
+     *
+     * @return array<WGClientConfig>
+     */
+    private function getConfigs($userId, $request)
+    {
+        // if query parameter "all" is set, show all certificates, also
+        // those issued to OAuth clients
+        $showAll = null !== $request->optionalQueryParameter('all');
+
+        return $this->wgManager->getConfigs($userId, $showAll);
     }
 }

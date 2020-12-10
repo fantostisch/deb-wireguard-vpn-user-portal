@@ -24,6 +24,10 @@ use LC\Portal\ClientFetcher;
 use LC\Portal\OAuth\BearerValidator;
 use LC\Portal\Storage;
 use LC\Portal\VpnApiModule;
+use LC\Portal\WireGuard\Daemon\WGDaemonClient;
+use LC\Portal\WireGuard\Manager\WGEnabledConfig;
+use LC\Portal\WireGuard\Manager\WGManager;
+use LC\Portal\WireGuard\WireGuardApiModule;
 
 $logger = new Logger('vpn-user-api');
 
@@ -45,7 +49,7 @@ try {
     $storage = new Storage(
         new PDO(sprintf('sqlite://%s/db.sqlite', $dataDir)),
         sprintf('%s/schema', $baseDir),
-        new DateInterval($config->requireString('sessionExpiry'))
+        new DateInterval($config->requireString('sessionExpiry', 'P90D'))
     );
     $storage->update();
 
@@ -83,9 +87,20 @@ try {
     $vpnApiModule = new VpnApiModule(
         $config,
         $serverClient,
-        new DateInterval($config->requireString('sessionExpiry'))
+        new DateInterval($config->requireString('sessionExpiry', 'P90D'))
     );
     $service->addModule($vpnApiModule);
+
+    $wgConfig = WGEnabledConfig::fromConfig($config);
+
+    if ($wgConfig instanceof WGEnabledConfig) {
+        $wgHttpClient = new CurlHttpClient();
+        $wgDaemonClient = new WGDaemonClient($wgHttpClient, $wgConfig->daemonUri);
+        $wgManager = new WGManager($wgConfig, $storage, $wgDaemonClient, $baseDir);
+        $wireguardApiModule = new WireGuardApiModule($wgManager);
+        $service->addModule($wireguardApiModule);
+    }
+
     $service->run($request)->send();
 } catch (Exception $e) {
     $logger->error($e->getMessage());

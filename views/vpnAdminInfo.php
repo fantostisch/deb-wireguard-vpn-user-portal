@@ -57,9 +57,12 @@
             <tr><th><?=$this->t('Hostname'); ?></th><td><code><?=$this->e($profileConfig->hostName()); ?></code></td></tr>
             <tr><th><?=$this->t('IPv4 Prefix'); ?></th><td><code><?=$this->e($profileConfig->range()); ?></code></td></tr>
             <tr><th><?=$this->t('IPv6 Prefix'); ?></th><td><code><?=$this->e($profileConfig->range6()); ?></code></td></tr>
-            <tr><th><?=$this->t('Listen IP'); ?></th><td><code><?=$this->e($profileConfig->listen()); ?></code></td></tr>
-            <tr><th><?=$this->t('Management IP'); ?></th><td><code><?=$this->e($profileConfig->managementIp()); ?></code></td></tr>
-            <tr><th><?=$this->t('TLS Protection'); ?></th><td><?=$this->e($profileConfig->tlsProtection()); ?></td></tr>
+<?php if ('::' !== $listenIp = $profileConfig->listen()): ?>
+            <tr><th><?=$this->t('Listen IP'); ?></th><td><code><?=$this->e($listenIp); ?></code></td></tr>
+<?php endif; ?>
+<?php if ('127.0.0.1' !== $managementIp = $profileConfig->managementIp()): ?>
+            <tr><th><?=$this->t('Management IP'); ?></th><td><code><?=$this->e($managementIp); ?></code></td></tr>
+<?php endif; ?>
 
 <?php if (null !== $dnsDomain = $profileConfig->dnsDomain()): ?>
             <tr><th><?=$this->t('DNS Domain'); ?></th><td><code><?=$this->e($dnsDomain); ?></code></td></tr>
@@ -68,11 +71,9 @@
 <?php if (0 !== count($profileConfig->dnsDomainSearch())): ?>
             <tr><th><?=$this->t('DNS Search Domain(s)'); ?></th>
             <td>
-                <ul>
 <?php foreach ($profileConfig->dnsDomainSearch() as $route): ?>
-                    <li><code><?=$this->e($route); ?></code></li>
+                <span class="plain"><code><?=$this->e($route); ?></code></span>
 <?php endforeach; ?>
-                </ul>
             </td>
             </tr>  
 <?php endif; ?>
@@ -80,11 +81,9 @@
 <?php if (0 !== count($profileConfig->routes())): ?>
             <tr><th><?=$this->t('Route(s)'); ?></th>
             <td>
-                <ul>
 <?php foreach ($profileConfig->routes() as $route): ?>
-                    <li><code><?=$this->e($route); ?></code></li>
+                    <span class="plain"><code><?=$this->e($route); ?></code></span>
 <?php endforeach; ?>
-                </ul>
             </td>
             </tr>
 <?php endif; ?>
@@ -92,11 +91,9 @@
 <?php if (0 !== count($profileConfig->dns())): ?>
             <tr><th><?=$this->t('DNS Server(s)'); ?></th>
             <td>
-                <ul>
 <?php foreach ($profileConfig->dns() as $route): ?>
-                    <li><code><?=$this->e($route); ?></code></li>
+                    <span class="plain"><code><?=$this->e($route); ?></code></span>
 <?php endforeach; ?>
-                </ul>
             </td>
             </tr>
 <?php endif; ?>
@@ -104,11 +101,9 @@
 <?php if (0 !== count($profileConfig->aclPermissionList())): ?>
             <tr><th><?=$this->t('ACL Permission List'); ?></th>
             <td>
-                <ul>
 <?php foreach ($profileConfig->aclPermissionList() as $route): ?>
-                    <li><code><?=$this->e($route); ?></code></li>
+                    <span class="plain"><code><?=$this->e($route); ?></code></span>
 <?php endforeach; ?>
-                </ul>
             </td>
             </tr>                                        
 <?php endif; ?>
@@ -116,11 +111,9 @@
 <?php if (0 !== count($profileConfig->vpnProtoPorts())): ?>
             <tr><th><?=$this->t('Protocols/Ports'); ?></th>
             <td>
-                <ul>
 <?php foreach ($profileConfig->vpnProtoPorts() as $route): ?>
-                    <li><code><?=$this->e($route); ?></code></li>
+                    <span class="plain"><code><?=$this->e($route); ?></code></span>
 <?php endforeach; ?>
-                </ul>
             </td>
             </tr>    
 <?php endif; ?>
@@ -128,11 +121,9 @@
 <?php if (0 !== count($profileConfig->exposedVpnProtoPorts())): ?>
             <tr><th><?=$this->t('Offered Protocols/Ports'); ?></th>
             <td>
-                <ul>
 <?php foreach ($profileConfig->exposedVpnProtoPorts() as $route): ?>
-                    <li><code><?=$this->e($route); ?></code></li>
+                    <span class="plain"><code><?=$this->e($route); ?></code></span>
 <?php endforeach; ?>
-                </ul>
             </td>
             </tr>   
 <?php endif; ?>
@@ -140,11 +131,9 @@
 <?php if (0 !== count($profileConfig->dnsSuffix())): ?>
             <tr><th><?=$this->t('DNS Suffix'); ?> <span class="warning"><?=$this->t('Legacy'); ?></span></th>
             <td>
-                <ul>
 <?php foreach ($profileConfig->dnsSuffix() as $route): ?>
-                    <li><code><?=$this->e($route); ?></code></li>
+                    <span class="plain"><code><?=$this->e($route); ?></code></span>
 <?php endforeach; ?>
-                </ul>
             </td>
             </tr>
 <?php endif; ?>
