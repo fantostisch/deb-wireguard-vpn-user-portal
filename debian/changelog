@@ -1,3 +1,9 @@
+wireguard-vpn-user-portal (0.0.4-1) sid; urgency=medium
+
+  * New upstream release
+
+ -- Nick Aquina <nickaquina@gmail.com>  Sun, 20 Dec 2020 00:15:54 +0100
+
 wireguard-vpn-user-portal (0.0.3-2) sid; urgency=medium
 
   * 
